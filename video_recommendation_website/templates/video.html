@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Video player column -->
+    <div class="col-lg-8 mb-4">
+        <!-- Simple native video player -->
+        <div class="video-player-container mb-3">
+            <video id="native-video-player" class="w-100 rounded shadow" controls preload="metadata" poster="{{ video.thumbnail }}">
+                <source src="{{ video.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="mt-2 alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                If the video doesn't play automatically, <a href="{{ video.url }}" target="_blank" class="alert-link">click here to open it directly</a>.
+            </div>
+        </div>
+
+        <!-- Video info -->
+        <div class="video-info mb-4">
+            <h1 class="h3 mb-2">{{ video.title }}</h1>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <span class="badge bg-primary me-2">{{ video.category.name }}</span>
+                    <span class="text-muted"><i class="fas fa-eye me-1"></i> {{ video.view_count }} views</span>
+                </div>
+                <small class="text-muted">
+                    <i class="far fa-calendar me-1"></i> {{ video.created_at.strftime('%b %d, %Y') }}
+                </small>
+            </div>
+            <div class="video-description mb-4">
+                <p>{{ video.description }}</p>
+            </div>
+        </div>
+
+        <!-- Comments section -->
+        <div class="comments-section">
+            <h3 class="h5 mb-3"><i class="far fa-comments me-2"></i>Comments</h3>
+            
+            <!-- Comment form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="comment-form" data-video-id="{{ video.id }}">
+                        <div class="mb-3">
+                            <textarea class="form-control" id="comment-content" rows="3" placeholder="Add a comment..." required></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i> Post Comment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Comments list -->
+            <div id="comments-container">
+                {% for comment in comments %}
+                <div class="card mb-3 comment">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h6 class="card-subtitle mb-2 text-primary">{{ comment.user.username }}</h6>
+                            <small class="text-muted">{{ comment.created_at.strftime('%b %d, %Y %H:%M') }}</small>
+                        </div>
+                        <p class="card-text">{{ comment.content }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-light text-center" id="no-comments-message">
+                    <i class="far fa-comment-dots me-2"></i> No comments yet. Be the first to comment!
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related videos column -->
+    <div class="col-lg-4">
+        <h3 class="h5 mb-3"><i class="fas fa-film me-2"></i>Related Videos</h3>
+        <div class="related-videos">
+            {% for related in related_videos %}
+            <div class="card mb-3 related-video-card">
+                <a href="{{ url_for('video_detail', video_id=related.id) }}" class="text-decoration-none">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <img src="{{ related.thumbnail }}" class="img-fluid rounded-start" alt="{{ related.title }}">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body py-2">
+                                <h6 class="card-title text-truncate mb-1">{{ related.title }}</h6>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye me-1"></i> {{ related.view_count }} views
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% else %}
+            <div class="alert alert-light">
+                <i class="fas fa-info-circle me-2"></i> No related videos found.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- No external video player script needed anymore, using native HTML5 video -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Track video events with simple HTML5 video API
+        const videoPlayer = document.getElementById('native-video-player');
+        
+        if (videoPlayer) {
+            // Play event
+            videoPlayer.addEventListener('play', function() {
+                console.log('Video playback started');
+            });
+            
+            // Ended event
+            videoPlayer.addEventListener('ended', function() {
+                console.log('Video playback completed');
+            });
+            
+            // Error handling
+            videoPlayer.addEventListener('error', function() {
+                console.error('Error loading video');
+            });
+        }
+        
+        // Comment form handling
+        const commentForm = document.getElementById('comment-form');
+        const commentsContainer = document.getElementById('comments-container');
+        const noCommentsMessage = document.getElementById('no-comments-message');
+        
+        if (commentForm) {
+            commentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const videoId = this.getAttribute('data-video-id');
+                const commentContent = document.getElementById('comment-content').value.trim();
+                
+                if (!commentContent) return;
+                
+                // Submit comment via API
+                fetch(`/api/videos/${videoId}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content: commentContent }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Clear the form
+                    document.getElementById('comment-content').value = '';
+                    
+                    // Remove the "no comments" message if it exists
+                    if (noCommentsMessage) {
+                        noCommentsMessage.remove();
+                    }
+                    
+                    // Add the new comment to the top of the list
+                    const commentHTML = `
+                    <div class="card mb-3 comment">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h6 class="card-subtitle mb-2 text-primary">${data.user}</h6>
+                                <small class="text-muted">${new Date(data.created_at).toLocaleString()}</small>
+                            </div>
+                            <p class="card-text">${data.content}</p>
+                        </div>
+                    </div>
+                    `;
+                    
+                    commentsContainer.insertAdjacentHTML('afterbegin', commentHTML);
+                })
+                .catch(error => {
+                    console.error('Error posting comment:', error);
+                    alert('Failed to post comment. Please try again.');
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

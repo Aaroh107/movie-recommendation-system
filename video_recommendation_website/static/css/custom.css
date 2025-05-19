@@ -1,0 +1,155 @@
+/* Custom CSS for Video Recommendation website */
+
+/* General styles */
+body {
+    padding-bottom: 60px; /* Space for footer */
+}
+
+/* Video card styling */
+.video-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    overflow: hidden;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.video-card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+/* Related videos cards */
+.related-video-card {
+    transition: background-color 0.2s ease;
+}
+
+.related-video-card:hover {
+    background-color: var(--bs-dark);
+}
+
+.related-video-card img {
+    height: 80px;
+    object-fit: cover;
+}
+
+/* Category cards */
+.category-card {
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Video player container */
+.video-player-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Comments section */
+.comment {
+    transition: background-color 0.2s ease;
+}
+
+.comment:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Search results highlighting */
+.highlight {
+    background-color: rgba(255, 193, 7, 0.2);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* Custom button styles */
+.btn-custom-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+}
+
+.btn-custom-primary:hover {
+    background-color: var(--bs-primary-dark, #0069d9);
+    border-color: var(--bs-primary-dark, #0062cc);
+    color: white;
+}
+
+/* Video duration badge */
+.video-duration {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 2px 4px;
+    border-radius: 2px;
+    font-size: 0.8rem;
+}
+
+/* Custom navbar styling */
+.navbar-brand {
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+/* Footer styling */
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    padding: 1rem 0;
+    background-color: var(--bs-dark);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .video-card .card-img-top {
+        height: 160px;
+    }
+    
+    .related-video-card img {
+        height: 70px;
+    }
+}
+
+@media (max-width: 576px) {
+    .video-card .card-img-top {
+        height: 200px;
+    }
+}
+
+/* Video.js custom styling */
+.video-js {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+}
+
+.video-js .vjs-big-play-button {
+    background-color: rgba(33, 37, 41, 0.7);
+    border-color: var(--bs-primary);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.video-js:hover .vjs-big-play-button {
+    background-color: var(--bs-primary);
+}
+
+.video-js .vjs-control-bar {
+    background-color: rgba(33, 37, 41, 0.7);
+}

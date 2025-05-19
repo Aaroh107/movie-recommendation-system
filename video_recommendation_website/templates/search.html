@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Search Results</li>
+            </ol>
+        </nav>
+        <h1 class="display-5 mb-4">
+            <i class="fas fa-search me-2"></i>Search Results for "{{ query }}"
+        </h1>
+        <p class="lead">Found {{ videos|length }} video(s)</p>
+    </div>
+</div>
+
+<!-- Search results grid -->
+<div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for video in videos %}
+    <div class="col">
+        <div class="card h-100 video-card">
+            <a href="{{ url_for('video_detail', video_id=video.id) }}" class="text-decoration-none">
+                <img src="{{ video.thumbnail }}" class="card-img-top" alt="{{ video.title }}">
+                <div class="card-body">
+                    <h5 class="card-title text-truncate">{{ video.title }}</h5>
+                    <p class="card-text text-muted">
+                        <span class="badge bg-primary me-2">{{ video.category.name }}</span>
+                        <i class="fas fa-eye me-1"></i> {{ video.view_count }} views
+                    </p>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i> No videos found matching your search. Please try different keywords.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock %}
